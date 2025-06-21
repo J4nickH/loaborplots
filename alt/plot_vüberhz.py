@@ -62,7 +62,7 @@ try:
     # --- Titel & Layout ---
     #plt.title("Bode-Diagramm – RC-Filter (Messung)", fontsize=14) # Angepasster Titel
     plt.tight_layout() # Passt das Layout an, um Überlappungen zu vermeiden
-    plt.savefig("2_Ordnung_veränderung_strom.png", dpi=300) # Speichert den Plot als Bild
+    #plt.savefig("2_Ordnung_veränderung_strom.png", dpi=300) # Speichert den Plot als Bild
     plt.show() # Zeigt den Plot an
 except:
     print("Fehler beim Laden der Datei oder beim Erstellen des Plots. Stellen Sie sicher, dass die Datei existiert und korrekt formatiert ist.")

@@ -1,0 +1,101 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+
+# Daten laden
+dateiname_df = "messung2lab4.csv" # Erster Dateiname
+df = pd.read_csv(dateiname_df, encoding="latin1", sep=',')
+
+# Zweiter Dateiname - BITTE HIER DEN KORREKTEN DATEINAMEN EINFÜGEN!
+dateiname_dp = "mess2lab4high.csv"
+dp = pd.read_csv(dateiname_dp, encoding="latin1", sep=',')
+
+
+# Daten für df vorbereiten
+frequenz_df = df["Hz"]
+df['db'] = 20 * np.log10(df['amp'] / df['in'])
+spalte_db_df = df["db"]
+spalte_phase_df = df["phase"]
+
+# Daten für dp vorbereiten
+frequenz_dp = dp["Hzh"]
+dp["dB"] = 20 * np.log10(dp["amph"] / dp["inh"])
+spalte_db_dp = dp["dB"]
+spalte_phase_dp = dp["phaseh"]
+
+fig, ax1 = plt.subplots(figsize=(8, 5))
+
+# Linke Y-Achse (Amplitude in dB)
+ax1.set_xlabel('Frequenz [Hz]')
+ax1.set_ylabel('Amplitude [dB]', color='blue')
+
+# Plot für Amplitude (Messung 1 - df)
+# Label hier nur für die Legende der gesamten "Amplitude"-Kategorie
+ax1.semilogx(frequenz_df, spalte_db_df, color='blue', label='_nolegend_', marker='o', markersize=5, linestyle='-')
+# Plot für Amplitude (Messung 2 - dp)
+# Wir verwenden einen anderen Linienstil/Marker, aber die gleiche Farbe,
+# und kein Label, damit es nicht zweimal in der Legende auftaucht.
+ax1.semilogx(frequenz_dp, spalte_db_dp, color='blue', label='_nolegend_', marker='o', markersize=5, linestyle='-')
+
+
+ax1.tick_params(axis='y', labelcolor='blue')
+ax1.grid(True, which="both", linestyle="--", linewidth=0.5)
+
+# X-Achse – saubere Ticks mit ganzzahligen Labels
+ax1.xaxis.set_major_locator(ticker.LogLocator(base=10.0, subs=(1.0, 2.0, 5.0), numticks=10))
+ax1.xaxis.set_major_formatter(ticker.FormatStrFormatter('%d'))
+
+amplitude_ticks = [10, 0, -10, -20, -30, -40, -50, -60, -70]
+tick_labels = [str(int(t)) for t in amplitude_ticks]
+
+# Set the major tick locations
+ax1.set_yticks(amplitude_ticks)
+ax1.set_yticklabels(tick_labels)
+
+
+# Rechte Y-Achse (Phase in Grad)
+ax2 = ax1.twinx()
+ax2.set_ylabel('Phase [°]', color='red')
+
+# Plot für Phase (Messung 1 - df)
+ax2.semilogx(frequenz_df, spalte_phase_df, color='red', label='_nolegend_', linestyle = "--", marker='s', markersize=5)
+# Plot für Phase (Messung 2 - dp)
+ax2.semilogx(frequenz_dp, spalte_phase_dp, color='red', label='_nolegend_', linestyle = "--", marker='s', markersize=5)
+
+ax2.tick_params(axis='y', labelcolor='red')
+
+
+tick_locations2 = [-180, -135, -90, -45, 0, 45, 90, 135, 180]
+tick_labels2 = [str(int(t)) for t in tick_locations2]
+
+ax2.set_yticks(tick_locations2)
+ax2.set_yticklabels(tick_labels2)
+
+# Manuelle Legende erstellen, um nur "Amplitude" und "Phase" anzuzeigen
+# Wir erstellen "Dummy"-Linien für die Legende
+line_amplitude = plt.Line2D([0], [0], color='blue', lw=2, label='Amplitude [dB]')
+line_phase = plt.Line2D([0], [0], color='red', lw=2, linestyle='--', label='Phase [°]')
+
+# Füge der Legende auch die Typen der Messungen hinzu, wenn du sie doch unterscheiden möchtest
+# Zum Beispiel:
+# line_amplitude_m1 = plt.Line2D([0], [0], color='blue', marker='o', markersize=5, linestyle='-', label='Amplitude (Messung 1)')
+# line_amplitude_m2 = plt.Line2D([0], [0], color='blue', marker='x', markersize=5, linestyle=':', label='Amplitude (Messung 2)')
+# line_phase_m1 = plt.Line2D([0], [0], color='red', marker='s', markersize=5, linestyle='--', label='Phase (Messung 1)')
+# line_phase_m2 = plt.Line2D([0], [0], color='red', marker='d', markersize=5, linestyle=':', label='Phase (Messung 2)')
+# ax1.legend(handles=[line_amplitude_m1, line_amplitude_m2, line_phase_m1, line_phase_m2], loc='upper left')
+
+# Aktuelle Version: Nur Amplitude und Phase in der Legende
+ax1.legend(handles=[line_amplitude, line_phase], loc='upper right')
+
+
+xticks = [100, 1000, 10000, 100000, 1000000, 10000000]
+ax1.set_xlim([100, 10000000])
+ax1.set_xticks(xticks)
+ax1.set_xticklabels([str(t) for t in xticks])
+
+# Titel & Layout
+#plt.title("Bode-Diagramm – RC-Tiefpass (Zwei Messungen)", fontsize=12) # Optional
+plt.tight_layout()
+plt.savefig("Messung2verstärkunglab4.png", dpi=300) # Dateinamen angepasst
+plt.show()
